@@ -58,7 +58,7 @@ with tab1:
                 st.write(f"**Dataset: {filename}**")
                 st.write(df)
 
-                # autocorrelation & autocovariance
+                # 1autocorrelation & autocovariance
                 analyzer = PortfolioAutoCorr()
                 autocorr_df, autocov_df = analyzer.analyze(df)
                 st.session_state[f"{filename}_autocorr_df"] = autocorr_df
@@ -279,40 +279,40 @@ with tab2:
 
                             st.pyplot(fig)
                             
-with tab3:
-    st.write('**Prediction**')
+# with tab3:
+#     st.write('**Prediction**')
     
-    for filename, df in st.session_state.get("datasets", {}).items():
-        st.write(f"### Predicting for {filename}")
+#     for filename, df in st.session_state.get("datasets", {}).items():
+#         st.write(f"### Predicting for {filename}")
         
-        stock_rnn_strategy = StockRNNStratgy()
-        predictions = stock_rnn_strategy.visualize(df)
+#         stock_rnn_strategy = StockRNNStratgy()
+#         predictions = stock_rnn_strategy.visualize(df)
 
-        # Kiểm tra xem predictions có hợp lệ không
-        if not predictions:
-            st.warning(f"No predictions generated for {filename}.")
-            continue  # Bỏ qua nếu không có dự đoán
+#         # Kiểm tra xem predictions có hợp lệ không
+#         if not predictions:
+#             st.warning(f"No predictions generated for {filename}.")
+#             continue  # Bỏ qua nếu không có dự đoán
 
-        for symbol, pred_df in predictions.items():
-            with st.expander(f"Stock: {symbol}"):
-                fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+#         for symbol, pred_df in predictions.items():
+#             with st.expander(f"Stock: {symbol}"):
+#                 fig, axes = plt.subplots(1, 2, figsize=(12, 5))
 
-                # Test set predictions
-                axes[0].plot(pred_df['Actual'], label='Actual Prices', color='blue')
-                axes[0].plot(pred_df['Predicted'], label='Predicted Prices', marker='o', alpha=0.5, color='red')
-                axes[0].legend()
-                axes[0].set_title(f'{symbol} Price Prediction (Test Set)', weight='bold')
-                axes[0].set_xlabel('Time [days]', fontsize=12, weight='bold')
-                axes[0].set_ylabel('Value [USD]', fontsize=12, weight='bold')
-                axes[0].grid(True)
+#                 # Test set predictions
+#                 axes[0].plot(pred_df['Actual'], label='Actual Prices', color='blue')
+#                 axes[0].plot(pred_df['Predicted'], label='Predicted Prices', marker='o', alpha=0.5, color='red')
+#                 axes[0].legend()
+#                 axes[0].set_title(f'{symbol} Price Prediction (Test Set)', weight='bold')
+#                 axes[0].set_xlabel('Time [days]', fontsize=12, weight='bold')
+#                 axes[0].set_ylabel('Value [USD]', fontsize=12, weight='bold')
+#                 axes[0].grid(True)
 
-                # Future predictions
-                # if 'Future_Predicted' in pred_df:
-                axes[1].plot(pred_df['Future_Predicted'], label='Predicted Future Prices', color='red', alpha=0.8)
-                axes[1].legend()
-                axes[1].set_title(f'{symbol} 3-Month Price Forecast', weight='bold')
-                axes[1].set_xlabel('Time [days]', fontsize=12, weight='bold')
-                axes[1].set_ylabel('Value [USD]', fontsize=12, weight='bold')
-                axes[1].grid(True)
+#                 # Future predictions
+#                 # if 'Future_Predicted' in pred_df:
+#                 axes[1].plot(pred_df['Future_Predicted'], label='Predicted Future Prices', color='red', alpha=0.8)
+#                 axes[1].legend()
+#                 axes[1].set_title(f'{symbol} 3-Month Price Forecast', weight='bold')
+#                 axes[1].set_xlabel('Time [days]', fontsize=12, weight='bold')
+#                 axes[1].set_ylabel('Value [USD]', fontsize=12, weight='bold')
+#                 axes[1].grid(True)
 
-                st.pyplot(fig)
+#                 st.pyplot(fig)
