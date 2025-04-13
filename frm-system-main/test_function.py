@@ -39,7 +39,7 @@ Hướng phát triển:
 data_path = "frm-system-main/src/data/fiinx/data_it_2021.csv" # Data tĩnh
 data_2021 = pd.read_csv(data_path)
 # data_2020 = CommonConsts.ticker_model
-# df = Processors.transform(data_2020)
+df = Processors.transform(data_2021)
 
 # Chọn strategy cần test, comment các strategy không cần test 
 # analysis_strategy = PortfolioEDA()

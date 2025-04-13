@@ -7,6 +7,8 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 
 from src.common.consts import CommonConsts
+
+
 class Processors:
     def transform(df):
         df = df.dropna(axis=0)
@@ -16,21 +18,68 @@ class Processors:
                 df[col] = df[col].str.replace(',', '').astype(float)
 
         return df
-    
+
+    # def prepare_data(symbol_df):
+    #     data = symbol_df.values.reshape(-1, 1)
+    #     scaler = MinMaxScaler()
+    #     data_normalized = scaler.fit_transform(data)
+
+    #     sequence_length = CommonConsts.SEQUENCE_LENGTH  # Use 63 days of data to predict the next value
+    #     X, y = [], []
+
+    #     for i in range(len(data_normalized) - sequence_length):
+    #         X.append(data_normalized[i:i + sequence_length])
+    #         y.append(data_normalized[i + sequence_length])
+
+    #     X = np.array(X)
+    #     y = np.array(y)
+
+    #     # Split into train and test sets
+    #     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    #     X_train = torch.tensor(X_train, dtype=torch.float32)
+    #     y_train = torch.tensor(y_train, dtype=torch.float32)
+    #     X_test = torch.tensor(X_test, dtype=torch.float32)
+    #     y_test = torch.tensor(y_test, dtype=torch.float32)
+
+    #     return {
+    #         'train_loader': DataLoader(
+    #             list(zip(X_train, y_train)),
+    #             batch_size=CommonConsts.BATCH_SIZE,
+    #             shuffle=True
+    #         ),
+    #         'X_test': X_test,
+    #         'y_test': y_test,
+    #         'scaler': scaler
+    #     }
     def prepare_data(symbol_df):
+    # Bỏ NaN, kiểm tra độ dài và độ đa dạng dữ liệu
+        symbol_df = symbol_df.dropna()
+
+        if symbol_df.nunique() <= 1:
+            print(f"[WARNING] Dữ liệu {symbol_df.name} không có biến động. Bỏ qua.")
+            return None
+
+        if len(symbol_df) < CommonConsts.SEQUENCE_LENGTH + CommonConsts.FORECAST_DAYS:
+            print(f"[WARNING] Dữ liệu {symbol_df.name} quá ngắn ({len(symbol_df)} dòng). Bỏ qua.")
+            return None
+
         data = symbol_df.values.reshape(-1, 1)
         scaler = MinMaxScaler()
         data_normalized = scaler.fit_transform(data)
 
-        sequence_length = CommonConsts.SEQUENCE_LENGTH # Use 63 days of data to predict the next value
+        sequence_length = CommonConsts.SEQUENCE_LENGTH
         X, y = [], []
 
         for i in range(len(data_normalized) - sequence_length):
-            X.append(data_normalized[i:i+sequence_length])
-            y.append(data_normalized[i+sequence_length])
+            X.append(data_normalized[i:i + sequence_length])
+            y.append(data_normalized[i + sequence_length])
 
         X = np.array(X)
-        y = np.array(y) 
+        y = np.array(y)
+
+        if len(X) == 0 or len(y) == 0:
+            print(f"[WARNING] Không thể tạo dữ liệu huấn luyện cho {symbol_df.name}.")
+            return None
 
         # Split into train and test sets
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)

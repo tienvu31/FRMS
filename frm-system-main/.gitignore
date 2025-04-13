@@ -17,3 +17,6 @@ temp
 
 build
 dist
+
+processors.py
+test_function.py
