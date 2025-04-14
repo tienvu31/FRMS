@@ -165,4 +165,4 @@ class StockRNNStratgy(StrategyInterface):
         axes[1].grid(True)
 
         plt.tight_layout()
-        st.pyplot(fig)  # ✅ Hiển thị trực tiếp trên Streamlit
+        st.pyplot(fig)  # Hiển thị trực tiếp trên Streamlit

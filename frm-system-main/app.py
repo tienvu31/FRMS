@@ -30,7 +30,7 @@ from src.services.strategies import (
 
 st.set_page_config(page_title="KLTN-FRM Analysis", layout="wide")
 
-st.title('FRM Analysis')
+st.title('Financial Risk Management Analysis')
 
 tab1, tab2, tab3 = st.tabs(['Table','Analysis','Prediction'])
 
@@ -150,7 +150,7 @@ with tab2:
     # ---- Column 3: GARCH ----
     with col3:
         with st.container(border=True):
-            with st.expander('GARCH Volatility Analysis'):
+            with st.expander('Volatility Analysis'):
                 if "datasets" in st.session_state and st.session_state["datasets"]:
                     for filename, df in st.session_state.get("datasets", {}).items():
                         st.write(f"**Dataset: {filename}**")
@@ -216,7 +216,7 @@ with tab2:
 
     with col2:
         with st.container(border = True):
-            with st.expander('Spectraldensity'):
+            with st.expander('Spectral Density Analysis'):
                 if "datasets" in st.session_state and st.session_state["datasets"]:
 
                     for filename in st.session_state["datasets"].keys():
@@ -290,10 +290,10 @@ with tab2:
     
     col1, col2, col3 = st.columns(3)
     with col1:
-# ---- Column 3: Ratios Analysis ----
+# ---- Column 3: Portfolio Analysis ----
 
         with st.container(border=True):
-            with st.expander('Ratios Analysis'):
+            with st.expander('Portfolio Analysis'):
                 if "datasets" in st.session_state and st.session_state["datasets"]:
                     for filename in st.session_state["datasets"].keys():
                         df = st.session_state["datasets"][filename]
@@ -388,66 +388,17 @@ with tab2:
                             axes[i].set_xticklabels(best_portfolio_weights.index, rotation=90 , fontsize = 12, weight = 'bold')
 
                         plt.tight_layout()
-                        st.pyplot(fig)
+                        st.pyplot(fig)                        
 
+with tab3:
+    rnn_strategy = StockRNNStratgy()
 
-        # with st.container(border=True):
-        #     with st.expander('Ratios Analysis'):
-                # if "datasets" in st.session_state and st.session_state["datasets"]:
-                #     for filename, df in st.session_state["datasets"].items():
-                #         st.write(f"**Portfolio Ratios - {filename}**")
-                        
-                #         ratios_analyzer = PortfolioRatios()
-                #         try:
-                #             results_df, weights_df = ratios_analyzer.analyze(df)
-                #             indices = results_df.columns
-
-                #             # Plot các chỉ số (4 biểu đồ)
-                #             fig, axes = plt.subplots(2, 2, figsize=(10, 10))
-                #             axes = axes.flatten()
-                #             metrics = ["Sharpe Ratio", "Treynor Ratio", "Jensen's Alpha", "Sortino Ratio"]
-                #             for i, metric in enumerate(metrics):
-                #                 scatter = axes[i].scatter(
-                #                     results_df["Volatility"],
-                #                     results_df["Return"],
-                #                     c=results_df[metric],
-                #                     cmap="viridis",
-                #                     s=5,
-                #                     alpha=0.5,
-                #                 )
-                #                 axes[i].set_title(metric)
-                #                 axes[i].set_xlabel("Volatility")
-                #                 axes[i].set_ylabel("Return")
-                #                 fig.colorbar(scatter, ax=axes[i])
-                #             st.pyplot(fig)
-
-                #             # Plot portfolio weights tốt nhất
-                #             fig, axes = plt.subplots(2, 2, figsize=(12, 6))
-                #             axes = axes.flatten()
-                #             for i, metric in enumerate(metrics):
-                #                 idx = results_df[metric].idxmax()
-                #                 best_weights = weights_df.iloc[idx]
-                #                 axes[i].bar(best_weights.index, best_weights.values)
-                #                 axes[i].set_title(f"Best Portfolio - {metric}")
-                #                 axes[i].set_xlabel("Asset")
-                #                 axes[i].set_ylabel("Weight")
-                #                 axes[i].tick_params(axis='x', rotation=90)
-                #             st.pyplot(fig)
-                        
-                #         except Exception as e:
-                #             st.error(f"Error analyzing {filename}: {e}")
-                        
-
-# with tab3:
-#     st.subheader("📈 Stock Price Prediction using RNN")
-#     rnn_strategy = StockRNNStratgy()
-
-#     if "datasets" in st.session_state and st.session_state["datasets"]:
-#         for filename, df in st.session_state["datasets"].items():
-#             with st.expander(f"Mô hình dự đoán cho: {filename}"):
-#                 try:
-#                     rnn_strategy.visualize(df)
-#                 except Exception as e:
-#                     st.error(f"Đã xảy ra lỗi khi xử lý {filename}: {e}")
-#     else:
-#         st.warning("Vui lòng upload dữ liệu ở tab Table trước khi thực hiện dự đoán.")
+    if "datasets" in st.session_state and st.session_state["datasets"]:
+        for filename, df in st.session_state["datasets"].items():
+            with st.expander(f"Prediction for: {filename}"):
+                try:
+                    rnn_strategy.visualize(df)
+                except Exception as e:
+                    st.error(f"Error in processing {filename}: {e}")
+    else:
+        st.warning("Please upload your dataset")
