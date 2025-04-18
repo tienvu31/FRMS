@@ -39,7 +39,7 @@ if "datasets" not in st.session_state:
     st.session_state["datasets"] = {}
 
 with tab1:
-    col1, col2 = st.columns([2,3])
+    col1, col2 = st.columns(2)
     with col1:
         st.write('**Upload your datasets here**')
         uploaded_files = st.file_uploader("Choose files", accept_multiple_files=True)
