@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import streamlit as st
 
 from src.common.consts import CommonConsts
 from src.services.strategies.strategy_interface import StrategyInterface
@@ -144,7 +145,8 @@ class PortfolioRatios(StrategyInterface):
         axes[1, 1].set_ylabel("Return", fontsize=12, weight="bold")
 
         plt.tight_layout()
-        plt.savefig(f"{CommonConsts.IMG_FOLDER}\\eff_frontier.jpg", dpi=600)
+        st.pyplot(fig)
+        # plt.savefig(f"{CommonConsts.IMG_FOLDER}\\eff_frontier.jpg", dpi=600)
 
         fig, axes = plt.subplots(2, 2, figsize=(12, 6))
         axes = axes.flatten()
@@ -169,5 +171,6 @@ class PortfolioRatios(StrategyInterface):
             axes[i].set_xticklabels(indices, rotation=90 , fontsize = 12, weight = 'bold')
 
         plt.tight_layout()
-        plt.savefig(f"{CommonConsts.IMG_FOLDER}\\portopt_weight.jpg", dpi=600)
+        st.pyplot(fig)
+        # plt.savefig(f"{CommonConsts.IMG_FOLDER}\\portopt_weight.jpg", dpi=600)
     

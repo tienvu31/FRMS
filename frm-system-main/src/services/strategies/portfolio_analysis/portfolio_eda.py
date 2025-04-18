@@ -1,7 +1,7 @@
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-
+import streamlit as st
 
 from src.common.consts import CommonConsts
 from src.services.strategies.strategy_interface import StrategyInterface
@@ -13,7 +13,7 @@ class PortfolioEDA(StrategyInterface):
     def visualize(self, df):
         # indices are columns of the data frame starting from the second column
         indices = CommonConsts.ticker_model
-        fig, axes = plt.subplots(5, 5, figsize=(24, 20))
+        fig, axes = plt.subplots(6, 6, figsize=(24, 20))
         for i in range(len(indices)):
             for j in range(len(indices)):
                 if i != j:
@@ -34,8 +34,9 @@ class PortfolioEDA(StrategyInterface):
                     axes[i, j].set_ylabel(indices[i], fontsize=15, weight='bold', color='blue')
 
         plt.tight_layout()
-        plt.savefig(f'{CommonConsts.IMG_FOLDER}\\0_correlation.jpg', dpi = 600)
+        st.pyplot(plt)
 
+    
         # Add correlation heatmap
         correlation_matrix = df[indices].corr()
         plt.figure(figsize=(10, 8))
@@ -48,5 +49,8 @@ class PortfolioEDA(StrategyInterface):
             cbar_kws={"shrink": 0.8},
             xticklabels=indices,
             yticklabels=indices
-        )
-        plt.savefig(f'{CommonConsts.IMG_FOLDER}\\1_correlation_heatmap.jpg', dpi = 600)
+        )   
+        st.pyplot(plt)
+        
+
+        

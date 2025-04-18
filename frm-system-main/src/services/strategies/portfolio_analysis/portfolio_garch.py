@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import streamlit as st
 from arch import arch_model
 
 from src.common.consts import CommonConsts
@@ -8,8 +9,8 @@ from src.services.strategies.strategy_interface import StrategyInterface
 class PortfolioGarch(StrategyInterface):
     def analyze(self, df: pd.DataFrame):
         indices = CommonConsts.ticker_model
-        # df['Date'] = pd.to_datetime(df['Date'])
-        # df.set_index('Date', inplace=True)
+        df['Date'] = pd.to_datetime(df['Date'])
+        df.set_index('Date', inplace=True)
         returns = df[indices].pct_change().dropna()
 
         return returns
@@ -26,7 +27,7 @@ class PortfolioGarch(StrategyInterface):
 
         results = {}
         for i, symbol in enumerate(indices):
-            model = arch_model(returns[symbol], vol=vol_model, p=1, q=1, 
+            model = arch_model(returns[symbol]*1000, vol=vol_model, p=1, q=1, 
                 mean='Constant', dist='Normal')
             res = model.fit(disp='off')
             results[symbol] = res
@@ -40,5 +41,4 @@ class PortfolioGarch(StrategyInterface):
             fig.delaxes(axes[j])
 
         plt.tight_layout()
-        plt.savefig(f'{CommonConsts.IMG_FOLDER}\\garch.jpg', dpi = 600)
-
+        st.pyplot(fig)

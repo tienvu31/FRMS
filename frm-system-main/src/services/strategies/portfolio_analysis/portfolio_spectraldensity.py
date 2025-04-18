@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.signal import welch
+import streamlit as st
 
 
 from src.common.consts import CommonConsts
@@ -30,8 +31,7 @@ class PortfolioSpectralDensity(StrategyInterface):
         plt.legend(ncol = 5)
         plt.grid(True)
         plt.tight_layout()
-        plt.savefig(f'{CommonConsts.IMG_FOLDER}\\spectral_density.jpg', dpi = 600)
-
+        st.pyplot(plt)
 
     def compute_spectral_density(self, data, fs=1.0):
         freqs, psd = welch(data, fs=fs, nperseg=min(256, len(data)))  # Welch's method

@@ -2,6 +2,7 @@ import pandas as pd
 import seaborn as sns
 import numpy as np
 import matplotlib.pyplot as plt
+import streamlit as st
 from statsmodels.tsa.arima.model import ARIMA
 from statsmodels.tsa.stattools import adfuller
 from statsmodels.tsa.ar_model import AutoReg
@@ -24,6 +25,11 @@ class PortfolioStationary(StrategyInterface):
         indices = CommonConsts.ticker_model
         for index in range(len(indices)):
             symbol = indices[index]
+            if symbol not in df.columns:
+                LOGGER.warning(f"{symbol} không có trong dataframe.")
+                continue
+
+            st.write(f"{symbol}")
             prices = df[symbol]
 
             # Calculate log returns
@@ -93,4 +99,5 @@ class PortfolioStationary(StrategyInterface):
                 ax.set_ylabel('Log Return', fontsize = 12, weight = 'bold')
                 ax.grid(True)
             plt.tight_layout()
-            plt.savefig(f'{CommonConsts.IMG_FOLDER}\\stationary_figures\\stationary_{symbol}.jpg', dpi = 600)
+            st.pyplot(fig)
+            plt.close(fig)
