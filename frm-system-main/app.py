@@ -52,12 +52,47 @@ with tab1:
                 
                 if "Date" in df.columns:
                     df["Date"] = df["Date"]  
-                # comment Date ở các file analysis 
                 st.session_state["datasets"][filename] = df
                 st.write(f"**Dataset: {filename}**")
                 st.write(df)
 
 with tab2:
+    col1, col2, col3 = st.columns(3)
+    # ---- Column 2: EDA ----
+    with col1:
+        with st.container(border=True):
+            with st.expander("Exploratory Data Analysis"):
+                st.write("Scatter Plot, Regression Line & Correlation Heatmap")
+
+                if "datasets" in st.session_state and st.session_state["datasets"]:
+                    eda_analyzer = PortfolioEDA()
+
+                    for filename, df in st.session_state["datasets"].items():
+                        st.markdown(f"**Dataset: {filename}**")
+                        eda_analyzer.visualize(df)
+    # ---- Column 1: Distance ----
+    with col2:
+        with st.container(border=True):
+            with st.expander('Distance Analysis'):
+                if "datasets" in st.session_state and st.session_state["datasets"]:
+                    strategy = PortfolioDistance()
+
+                    for filename in st.session_state["datasets"].keys():
+                        df = st.session_state["datasets"][filename]
+                        st.markdown(f"**Distance-based Clustering - {filename}**")
+                        strategy.visualize(df)
+    # ---- Column 3: Stationary ----  
+    with col3:
+        with st.container(border=True):
+            with st.expander('Stationarity Analysis'):
+                if "datasets" in st.session_state and st.session_state["datasets"]:
+                    stationary = PortfolioStationary()
+
+                    for filename in st.session_state["datasets"].keys():
+                        df = st.session_state["datasets"][filename]
+                        st.markdown(f"**St - {filename}**")
+                        stationary.visualize(df)  
+                         
     col1, col2, col3 = st.columns(3)
     # ---- Column 1: Correlation ----
     with col1:
@@ -71,22 +106,8 @@ with tab2:
 
                         st.markdown(f"**Autocorrelation & Autocovariance - {filename}**")
                         strategy.visualize(df)
-                        
-    # ---- Column 2: EDA ----
-    with col2:
-        with st.container(border=True):
-            with st.expander("Exploratory Data Analysis"):
-                st.write("Scatter Plot, Regression Line & Correlation Heatmap")
-
-                if "datasets" in st.session_state and st.session_state["datasets"]:
-                    eda_analyzer = PortfolioEDA()
-
-                    for filename, df in st.session_state["datasets"].items():
-                        st.markdown(f"**Dataset: {filename}**")
-                        eda_analyzer.visualize(df)
-        
     # ---- Column 3: GARCH ----
-    with col3:
+    with col2:
         with st.container(border=True):
             with st.expander('Volatility Analysis'):
                 if "datasets" in st.session_state and st.session_state["datasets"]:
@@ -95,22 +116,8 @@ with tab2:
                     for filename, df in st.session_state["datasets"].items():
                         st.markdown(f"**Dataset: {filename}**")
                         garch_analyzer.visualize(df)
-    
-    col1, col2, col3 = st.columns(3)  
-    # ---- Column 1: Distance ----
-    with col1:
-        with st.container(border=True):
-            with st.expander('Distance Analysis'):
-                if "datasets" in st.session_state and st.session_state["datasets"]:
-                    strategy = PortfolioDistance()
-
-                    for filename in st.session_state["datasets"].keys():
-                        df = st.session_state["datasets"][filename]
-                        st.markdown(f"**Distance-based Clustering - {filename}**")
-                        strategy.visualize(df)
-
-    # ---- Column 2: Spectral Density ----
-    with col2:
+    # ---- Column 1： Spectral Density ----
+    with col3:
         with st.container(border = True):
             with st.expander('Spectral Density Analysis'):
                 if "datasets" in st.session_state and st.session_state["datasets"]:
@@ -120,21 +127,9 @@ with tab2:
                         df = st.session_state["datasets"][filename]
                         st.markdown(f"**Density - {filename}**")
                         spectral_analyzer.visualize(df)
-                        
-    # ---- Column 3: Stationary ----  
-    with col3:
-        with st.container(border=True):
-            with st.expander('Stationarity Analysis'):
-                if "datasets" in st.session_state and st.session_state["datasets"]:
-                    stationary = PortfolioStationary()
 
-                    for filename in st.session_state["datasets"].keys():
-                        df = st.session_state["datasets"][filename]
-                        st.markdown(f"**St - {filename}**")
-                        stationary.visualize(df)    
-    
     col1, col2, col3 = st.columns(3)
-    # ---- Column 1: Portfolio ----                     
+    # ---- Column 2: Portfolio ----                     
     with col1:
         with st.container(border=True):
             with st.expander('Portfolio Analysis'):

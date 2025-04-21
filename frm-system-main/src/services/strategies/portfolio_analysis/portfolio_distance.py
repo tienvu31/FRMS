@@ -11,34 +11,40 @@ from scipy.cluster.hierarchy import dendrogram, linkage
 from src.common.consts import CommonConsts
 from src.services.strategies.strategy_interface import StrategyInterface
 
-class PortfolioDistance(StrategyInterface):
+class PortfolioDistance(StrategyInterface):    
     def analyze(self, df: pd.DataFrame):
-        # df['Date'] = pd.to_datetime(df['Date'])  
-        # df.set_index('Date', inplace=True)
-
         lag = 5
         log_DF = pd.DataFrame()
+
         for symbol in df.columns:
             prices = df[symbol]
+            # Bỏ các cột không phải số nếu có
+            if not np.issubdtype(prices.dtype, np.number):
+                continue
             log_returns = np.log(prices / prices.shift(lag)).dropna()
             log_returns = (log_returns - log_returns.mean()) / log_returns.std()
             log_DF[symbol] = log_returns
 
+        # Chuẩn hóa lần nữa toàn bộ DataFrame nếu cần
         standardized_df = (log_DF - log_DF.mean()) / log_DF.std()
+
+        # Tính khoảng cách cặp
         distance_matrix = squareform(pdist(standardized_df.T, metric='euclidean'))
-        distance_df = pd.DataFrame(distance_matrix, index=df.columns, columns=df.columns)
+        distance_df = pd.DataFrame(distance_matrix, index=standardized_df.columns, columns=standardized_df.columns)
 
+        # Tạo đồ thị MST
         mst_graph = nx.Graph()
-
         for i, stock1 in enumerate(distance_df.columns):
             for j, stock2 in enumerate(distance_df.columns):
                 if i < j:
-                    mst_graph.add_edge(stock1, stock2, weight=df.iloc[i, j])
+                    mst_graph.add_edge(stock1, stock2, weight=distance_df.loc[stock1, stock2])
 
         mst = nx.minimum_spanning_tree(mst_graph, algorithm="kruskal")
-        
         linkage_matrix = linkage(squareform(distance_matrix), method="ward")
+
         return mst, linkage_matrix, distance_df
+        
+    
     
     def visualize(self, df):    
         mst, linkage_matrix, distance_df = self.analyze(df)

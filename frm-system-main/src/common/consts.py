@@ -20,3 +20,4 @@ class CommonConsts:
     LEARNING_RATE: float = 0.001
     EPOCHS: int = 100
     FORECAST_DAYS: int = 63  # 3 months - weekdays
+    FORECAST_YEAR_DAYS: int =  252 # 1 year

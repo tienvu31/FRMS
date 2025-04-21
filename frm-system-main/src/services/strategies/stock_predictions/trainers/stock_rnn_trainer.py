@@ -33,21 +33,18 @@ class ModelTrainer:
             predictions = self.model(X_test).numpy()
         return predictions
 
-    def predict_future_price(self, last_sequence: np.ndarray) -> np.ndarray:
+    def predict_future_price(self, last_sequence: np.ndarray, days_ahead: int = CommonConsts.FORECAST_DAYS) -> np.ndarray:
         self.model.eval()
         future_predictions = []
-        # temp_sequence = np.copy(last_sequence)
-        
-        for _ in range(CommonConsts.FORECAST_DAYS):
+
+        for _ in range(days_ahead):
             with torch.no_grad():
-                future_pred = self.model(
-                    torch.tensor(last_sequence, dtype=torch.float32)
-                ).numpy()
+                future_pred = self.model(torch.tensor(last_sequence, dtype=torch.float32)).numpy()
                 future_predictions.append(future_pred[0, 0])
                 last_sequence = np.append(
                     last_sequence[:, 1:, :],
                     future_pred.reshape(1, 1, 1),
                     axis=1
                 )
-        
+
         return np.array(future_predictions).reshape(-1, 1)
