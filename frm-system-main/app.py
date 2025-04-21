@@ -58,7 +58,7 @@ with tab1:
 
 with tab2:
     col1, col2, col3 = st.columns(3)
-    # ---- Column 2: EDA ----
+    # ---- Column 1: EDA ----
     with col1:
         with st.container(border=True):
             with st.expander("Exploratory Data Analysis"):
@@ -70,7 +70,7 @@ with tab2:
                     for filename, df in st.session_state["datasets"].items():
                         st.markdown(f"**Dataset: {filename}**")
                         eda_analyzer.visualize(df)
-    # ---- Column 1: Distance ----
+    # ---- Column 2: Distance ----
     with col2:
         with st.container(border=True):
             with st.expander('Distance Analysis'):
@@ -106,7 +106,7 @@ with tab2:
 
                         st.markdown(f"**Autocorrelation & Autocovariance - {filename}**")
                         strategy.visualize(df)
-    # ---- Column 3: GARCH ----
+    # ---- Column 2: GARCH ----
     with col2:
         with st.container(border=True):
             with st.expander('Volatility Analysis'):
@@ -116,7 +116,7 @@ with tab2:
                     for filename, df in st.session_state["datasets"].items():
                         st.markdown(f"**Dataset: {filename}**")
                         garch_analyzer.visualize(df)
-    # ---- Column 1： Spectral Density ----
+    # ---- Column 3： Spectral Density ----
     with col3:
         with st.container(border = True):
             with st.expander('Spectral Density Analysis'):
@@ -129,7 +129,7 @@ with tab2:
                         spectral_analyzer.visualize(df)
 
     col1, col2, col3 = st.columns(3)
-    # ---- Column 2: Portfolio ----                     
+    # ---- Column 1: Portfolio ----                     
     with col1:
         with st.container(border=True):
             with st.expander('Portfolio Analysis'):
