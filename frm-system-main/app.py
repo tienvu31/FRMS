@@ -8,9 +8,6 @@ import networkx as nx
 import torch
 import torch.nn as nn
 from scipy.cluster.hierarchy import dendrogram, linkage
-from statsmodels.tsa.arima.model import ARIMA
-from statsmodels.tsa.stattools import adfuller
-from statsmodels.tsa.ar_model import AutoReg
 from src.utils.logger import LOGGER
 from arch import arch_model
 from src.common.consts import CommonConsts
