@@ -8,12 +8,20 @@ from src.services.strategies.strategy_interface import StrategyInterface
 
 class PortfolioAutoCorr(StrategyInterface):
     def autocorrelation(self, series, lag):
-        return series.autocorr(lag) if len(series) > lag else np.nan
+        series = np.asarray(series)  
+        if len(series) > lag:
+            mean = np.mean(series)
+            num = np.sum((series[:-lag] - mean) * (series[lag:] - mean))
+            denom = np.sum((series - mean)**2)
+            return num / denom if denom != 0 else np.nan
+        else:
+            return np.nan
 
     def autocovariance(self, series, lag):
+        series = np.asarray(series)  
         if lag >= len(series):
             return np.nan
-        mean = series.mean()
+        mean = np.mean(series)
         return np.mean((series[:-lag] - mean) * (series[lag:] - mean)) if lag > 0 else np.var(series)
 
     def analyze(self, df: pd.DataFrame):
@@ -24,7 +32,7 @@ class PortfolioAutoCorr(StrategyInterface):
         autocov_results = {symbol: [] for symbol in indices}
 
         for symbol in indices:
-            series = df[symbol].dropna()  # tránh lỗi với giá trị thiếu
+            series = df[symbol].dropna().values  # Lấy .values để thành Numpy Array
             for lag in range(1, max_lag + 1):
                 autocorr_results[symbol].append(self.autocorrelation(series, lag))
                 autocov_results[symbol].append(self.autocovariance(series, lag))
