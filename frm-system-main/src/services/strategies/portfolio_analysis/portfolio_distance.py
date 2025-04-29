@@ -10,54 +10,53 @@ from scipy.cluster.hierarchy import dendrogram, linkage
 
 from src.common.consts import CommonConsts
 from src.services.strategies.strategy_interface import StrategyInterface
-
-class PortfolioDistance(StrategyInterface):    
+        
+class PortfolioDistance(StrategyInterface):
     def analyze(self, df: pd.DataFrame):
-        lag = 5
-        log_DF = pd.DataFrame()
+        df['Date'] = pd.to_datetime(df['Date'])  
+        df.set_index('Date', inplace=True)
 
-        for symbol in df.columns:
+        lag = 5
+        log_DF = pd.DataFrame([])
+        for index in range(len(df.columns)):
+            symbol = df.columns[index]
             prices = df[symbol]
-            # Bỏ các cột không phải số nếu có
-            if not np.issubdtype(prices.dtype, np.number):
-                continue
             log_returns = np.log(prices / prices.shift(lag)).dropna()
-            log_returns = (log_returns - log_returns.mean()) / log_returns.std()
+            log_returns_mean = log_returns.mean()
+            log_returns_std = log_returns.std()
+            log_returns = (log_returns - log_returns_mean)/(log_returns_std)
             log_DF[symbol] = log_returns
 
-        # Chuẩn hóa lần nữa toàn bộ DataFrame nếu cần
         standardized_df = (log_DF - log_DF.mean()) / log_DF.std()
-
-        # Tính khoảng cách cặp
         distance_matrix = squareform(pdist(standardized_df.T, metric='euclidean'))
-        distance_df = pd.DataFrame(distance_matrix, index=standardized_df.columns, columns=standardized_df.columns)
+        distance_df = pd.DataFrame(distance_matrix, index=df.columns, columns=df.columns)
 
-        # Tạo đồ thị MST
         mst_graph = nx.Graph()
+
         for i, stock1 in enumerate(distance_df.columns):
             for j, stock2 in enumerate(distance_df.columns):
                 if i < j:
-                    mst_graph.add_edge(stock1, stock2, weight=distance_df.loc[stock1, stock2])
+                    mst_graph.add_edge(stock1, stock2, weight=df.iloc[i, j])
 
         mst = nx.minimum_spanning_tree(mst_graph, algorithm="kruskal")
+        
+        # Step 2: Generate hierarchical clustering tree
         linkage_matrix = linkage(squareform(distance_matrix), method="ward")
 
         return mst, linkage_matrix, distance_df
-        
-    
-    
+
     def visualize(self, df):    
         mst, linkage_matrix, distance_df = self.analyze(df)
 
         # Plot pairwise distance matrix
         fig1 = plt.figure(figsize=(6, 6))
         sns.heatmap(distance_df, annot=True, cmap="coolwarm", fmt=".1f")
-        plt.title("Pairwise Distance Matrix", fontsize=16, weight='bold')
         plt.xticks(fontsize=16, weight='bold', rotation=90)
         plt.yticks(fontsize=16, weight='bold', rotation=0)
         plt.tight_layout()
         st.pyplot(fig1)
-
+        plt.close(fig1)
+        
         # Plot MST
         fig2 = plt.figure(figsize=(6, 6))
         pos = nx.spring_layout(mst, seed=42)
@@ -65,13 +64,15 @@ class PortfolioDistance(StrategyInterface):
         plt.title("Minimum Spanning Tree", fontsize=16, weight='bold')
         plt.tight_layout()
         st.pyplot(fig2)
+        plt.close(fig2)
 
-        # Plot hierarchical clustering tree
+    # Plot hierarchical clustering tree
         fig3 = plt.figure(figsize=(6, 6))
         dendrogram(linkage_matrix, labels=distance_df.columns, leaf_rotation=90, leaf_font_size=10)
-        plt.xlabel("Stocks", fontsize=16, weight='bold')
-        plt.ylabel("Distance", fontsize=16, weight='bold')
-        plt.xticks(fontsize=16, weight='bold')
-        plt.yticks(fontsize=16, weight='bold')
+        plt.xlabel("Stocks", fontsize = 16, weight = 'bold')
+        plt.ylabel("Distance", fontsize = 16, weight = 'bold')
+        plt.xticks(fontsize = 16, weight = 'bold')
+        plt.yticks(fontsize = 16, weight = 'bold')
         plt.tight_layout()
         st.pyplot(fig3)
+        plt.close(fig3)
