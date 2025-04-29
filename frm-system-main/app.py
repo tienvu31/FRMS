@@ -8,6 +8,9 @@ import networkx as nx
 import torch
 import torch.nn as nn
 from scipy.cluster.hierarchy import dendrogram, linkage
+from statsmodels.tsa.arima.model import ARIMA
+from statsmodels.tsa.stattools import adfuller
+from statsmodels.tsa.ar_model import AutoReg
 from src.utils.logger import LOGGER
 from arch import arch_model
 from src.common.consts import CommonConsts
@@ -67,6 +70,7 @@ with tab2:
                     for filename, df in st.session_state["datasets"].items():
                         st.markdown(f"**Dataset: {filename}**")
                         eda_analyzer.visualize(df)
+                        
     # ---- Column 2: Distance ----
     with col2:
         with st.container(border=True):
@@ -78,6 +82,9 @@ with tab2:
                         df = st.session_state["datasets"][filename]
                         st.markdown(f"**Distance-based Clustering - {filename}**")
                         strategy.visualize(df)
+
+
+   
     # ---- Column 3: Stationary ----  
     with col3:
         with st.container(border=True):
@@ -89,6 +96,7 @@ with tab2:
                         df = st.session_state["datasets"][filename]
                         st.markdown(f"**St - {filename}**")
                         stationary.visualize(df)  
+
                          
     col1, col2, col3 = st.columns(3)
     # ---- Column 1: Correlation ----
@@ -137,7 +145,6 @@ with tab2:
                         df = st.session_state["datasets"][filename]
                         st.markdown(f"**St - {filename}**")
                         ratios.visualize(df) 
-
 with tab3:
     rnn_strategy = StockRNNStratgy()
 
